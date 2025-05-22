@@ -1,0 +1,1 @@
+class EmptyYearException extends Error {}

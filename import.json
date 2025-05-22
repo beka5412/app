@@ -1,0 +1,17 @@
+{
+    "dependencies": [
+        {
+            "name": "jQuery",
+            "files": [
+                "node_modules/jquery/dist/jquery.min.js"
+            ]            
+        },
+        {
+            "name": "Toastfy",
+            "files": [
+                "node_modules/toastify-js/src/toastify.css",
+                "node_modules/toastify-js/src/toastify.js"
+            ]            
+        }
+    ]
+}

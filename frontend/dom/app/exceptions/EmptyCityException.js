@@ -1,0 +1,1 @@
+class EmptyCityException extends Error {}

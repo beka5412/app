@@ -1,0 +1,1 @@
+class EmptyBirthdateException extends Error {}

@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "autoload": "composer dump-autoload --optimize"
+  },
+  "dependencies": {
+    "jquery": "^3.6.3",
+    "toastify-js": "^1.12.0"
+  }
+}

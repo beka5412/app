@@ -1,0 +1,87 @@
+body {
+    background: #ededed;
+    font-family: 'Poppins';
+}
+
+.block-1 {
+    height: 182px;
+    background: var(--primary-color);
+}
+
+.custom-content {
+    margin-top: -120px;
+}
+
+.label {
+    font-size: 12px;
+}
+
+.title {
+    font-size: 24px;
+    font-family: 'Lato';
+}
+
+.error {
+    background: var(--error-background);
+    padding: 6px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-family: lato;
+    font-size: 12px;
+    color: var(--error-color);
+}
+
+.login-error {
+    display: none
+}
+
+.lbl-forgot {
+    width: calc(100% - 40px);
+    display: block;
+    padding: 20px 20px 15px 20px;
+    font-family: 'Lato';
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.btns-forgot > div {
+    transition: .1s ease-in-out;
+    cursor: pointer;
+    border: none;
+    width: calc(100% - 40px);
+    padding: 10px 5px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: transparent;
+    text-align: left;
+    font-family: 'Poppins';
+    font-weight: 300;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btns-forgot > div:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
+
+.btns-forgot > div:hover {
+    background: #00000005;
+}
+
+.btns-forgot > div > div {
+    min-height: 24px;
+}
+
+.a-dark {
+    color: #b6c6e3;
+}
+.a-dark:hover {
+    color: #02a0fc;
+}
+
+.dark-mode .card, .dark-mode .kanban-add-task, .dark-mode .kanban-board-header, .dark-mode .kanban-item,
+.dark-mode .team-info li span:last-child, .dark-mode .team-statistics li span:first-child, .dark-mode .project-progress-percent, .dark-mode .kanban-title-content .title, .dark-mode .card-tools-nav li a:hover, .dark-mode .card-tools-nav li a.active, .dark-mode .card-tools-nav li.active a, .dark-mode .card-amount .amount, .dark-mode .accordion-head .title, .dark-mode .form-file-label::after, .dark-mode .input-mail, .dark-mode .form-control, .dark-mode div.dataTables_wrapper div.dataTables_filter input, div.dataTables_wrapper div.dataTables_filter .dark-mode input, .dark-mode .dual-listbox .dual-listbox__search, .dual-listbox .dark-mode .dual-listbox__search, .dark-mode .form-control:focus, .dark-mode .form-label, .dark-mode .form-label-outlined, .dark-mode .input-group-text, .dark-mode .table .table-light th, .dark-mode .table-hover tbody tr:hover, .dark-mode .close, .dark-mode .close:hover, .dark-mode .user-name, .dark-mode .nk-news-text p, .dark-mode .data-item:hover .icon, .dark-mode .accordion-icon 
+{
+    background-color: #09090a!important;
+}

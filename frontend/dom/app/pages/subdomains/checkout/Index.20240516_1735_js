@@ -1,0 +1,1407 @@
+App.Subdomains.Checkout.Index = class Index extends Page {
+    context = 'form';
+    title = 'Checkout';
+    orderbumps = [];
+    pmDiscountApplied = 0;
+    customerAuthToken = '';
+    last_email = '';
+    customerCreditCard = null;
+    useSavedCard = false;
+    addressFormat = '';
+
+    view(loaded) {
+        return super.find(`subdomains/checkout/${this?.constructor?.name||''}${this?.queryString||''}`, () => {
+            this.load();
+            return loaded;
+        });
+    }
+
+    getPaymentMethod() {
+        let payment_method = '';
+        let btnPaymentMethodCreditCard = document.querySelector('[checkout-radio="payment-method"] input[type="radio"][value="credit_card"]');
+        let btnPaymentMethodPix = document.querySelector('[checkout-radio="payment-method"] input[type="radio"][value="pix"]');
+        let btnPaymentMethodBillet = document.querySelector('[checkout-radio="payment-method"] input[type="radio"][value="billet"]');
+        let btnPaymentMethodFree = document.querySelector('[checkout-radio="payment-method"] input[type="radio"][value="free"]');
+
+        if (btnPaymentMethodCreditCard?.checked) payment_method = btnPaymentMethodCreditCard.value;
+        else if (btnPaymentMethodPix?.checked) payment_method = btnPaymentMethodPix.value;
+        else if (btnPaymentMethodBillet?.checked) payment_method = btnPaymentMethodBillet.value;
+        else if (btnPaymentMethodFree?.checked) payment_method = btnPaymentMethodFree.value;
+
+        return payment_method;
+    }
+
+    
+    getGender() {
+        let gender = '';
+        let genderM = document.querySelector('#genderM');
+        let genderF = document.querySelector('#genderF');
+
+        if (genderM.checked) return 'M';
+        if (genderF.checked) return 'F';
+        return '';
+    }
+
+    checkoutOnSubmit(element) {
+        let url_ = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/makePayment`;
+
+        let thanksEnabled = element.getAttribute('data-product-credit_card_thanks_page_enabled');
+        let thanksUrl = element.getAttribute('data-credit_card_thanks_page_url');
+        let payment_method = this.getPaymentMethod();
+        let product_id = element.hasAttribute('data-product-id') ? element.getAttribute('data-product-id') : '';
+        let checkout_id = element.hasAttribute('data-checkout-id') ? element.getAttribute('data-checkout-id') : '';
+        let variation = element.hasAttribute('data-variation') ? element.getAttribute('data-variation') : '';
+        let path_param_1 = element.hasAttribute('data-path-param-1') ? element.getAttribute('data-path-param-1') : '';
+        let path_param_2 = element.hasAttribute('data-path-param-2') ? element.getAttribute('data-path-param-2') : '';
+
+        let data = {
+            id: product_id,
+            checkout_id,
+            payment_method,
+            variation,
+            sku: path_param_1,
+            name: document.querySelector('[checkout-input="name"]')?.value || '',
+            email: document.querySelector('[checkout-input="email"]')?.value || '',
+            cpf_cnpj: document.querySelector('[checkout-input="cpf_cnpj"]')?.value || '',
+            phone: document.querySelector('[checkout-input="phone"]')?.value || '',
+            street: document.querySelector('[checkout-input="street"]')?.value || '',
+            number: document.querySelector('[checkout-input="number"]')?.value || '',
+            neighborhood: document.querySelector('[checkout-input="neighborhood"]')?.value || '',
+            complement: document.querySelector('[checkout-input="complement"]')?.value || '',
+            city: document.querySelector('[checkout-input="city"]')?.value || '',
+            state: document.querySelector('[checkout-input="state"]')?.value || '',
+            zipcode: document.querySelector('[checkout-input="zipcode"]')?.value || '',
+            holdername: document.querySelector('[checkout-input="holdername"]')?.value || '',
+            card_number: document.querySelector('[checkout-input="card_number"]')?.value || '',
+            month: document.querySelector('[checkout-input="month"]')?.value || '',
+            year: document.querySelector('[checkout-input="year"]')?.value || '',
+            cvv: document.querySelector('[checkout-input="cvv"]')?.value || '',
+            installments: document.querySelector('[checkout-input="installments"]')?.value || '',
+            orderbumps: this.orderbumps,
+            gender: this.getGender(),
+            customer_auth_token: this.customerAuthToken,
+            card_index: this?.customerCreditCard?.index || 0,
+            use_saved_card: this.useSavedCard ? 1 : 0
+        };
+
+        data.flag = flag(data.card_number);
+        data.cpf_cnpj = data?.cpf_cnpj?.replace(/\D/g, '');
+
+        let error_message = '';
+
+        try {
+            if (!data?.name) throw new EmptyNameException;
+            if (!data?.email) throw new EmptyEmailException;
+            if (!data?.email?.isEmail()) throw new InvalidEmailException;
+            if (!data?.phone) throw new EmptyPhoneException;
+            if (!data?.cpf_cnpj) throw new EmptyDocException;
+            if (!String(data?.cpf_cnpj).isCPF() && !String(data?.cpf_cnpj).isCNPJ())
+                throw new InvalidDocException;
+
+            if (!payment_method) throw new EmptyPaymentMethodException;
+
+            if (payment_method == 'credit_card' && !this?.customerCreditCard) {
+                if (!data?.holdername) throw new EmptyHoldernameException;
+                if (!data?.card_number) throw new EmptyCardNumberException;
+                if (!data.flag) throw new InvalidCardNumberException;
+                if (!data?.month) throw new EmptyMonthException;
+                if (!data?.year) throw new EmptyYearException;
+                if (!data?.cvv) throw new EmptyCvvException;
+            }
+
+            if (payment_method == 'billet' || payment_method == 'credit_card') {
+                if (!data?.zipcode) throw new EmptyZipcodeException;
+                if (!data?.street) throw new EmptyStreetException;
+                if (!data?.number) throw new EmptyNumberException;
+                if (!data?.neighborhood) throw new EmptyNeighborhoodException;
+                // if (!data?.complement) throw new EmptyComplementException;
+                if (!data?.city) throw new EmptyCityException;
+                if (!data?.state) throw new EmptyStateException;
+            }
+
+            let options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Client-Name': 'Action',
+                    'Subdomain': subdomain()
+                },
+                body: JSON.stringify(data)
+            };
+
+            element.setAttribute('disabled', true);
+            startSpin(element);
+
+            Swal.fire({
+                title: 'Um segundo',
+                html: "Aguarde o pagamento finalizar...",
+                confirmButtonText: 'Fechar',
+                showCancelButton: false,
+                onBeforeOpen: function onBeforeOpen() {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(url_, options)
+                .then(response => response.json())
+                .then(body => {
+                    swal.close();
+                    // console.log(body);
+
+                    let data = body?.data;
+                    let status = data?.attributes?.status;
+                    let order_uuid = data?.order_uuid;
+
+                    let info = tagJSON('customer');
+                    info.email = data?.app?.customer_email || '';
+                    info.token = data?.app?.customer_upsell_token || '';
+                    info.order_id = data?.app?.order_id || '';
+                    info.total = data?.app?.total || '';
+                    let token = JSON.stringify(info).toHex();
+
+                    // if (body?.status == 'success') {}
+                    // else {
+                    //     Swal.fire('Erro!', 'O pagamento não pôde ser concluído.', 'error');
+                    // }
+
+                    if (payment_method == 'credit_card') {                            
+                        if (data.gateway == 'ipag') {
+                            if (status?.code == '<?php echo \Backend\Enums\IPag\EIPagPaymentStatus::PRE_AUTHORIZED; ?>' 
+                            || status?.code == '<?php echo \Backend\Enums\IPag\EIPagPaymentStatus::CAPTURED; ?>') {
+                                // document.location = '<?php echo site_url(); ?>/dashboard';
+                                if (thanksEnabled == 1) {
+                                    let _url = thanksUrl;
+                                    let concat = /\?/.test(_url) ? '&' : '?';
+                                    document.location = _url + concat + 'k=' + token;
+                                }
+
+                                else {
+                                    let link = new Link;
+                                    link.to(`${getSubdomainSerialized('checkout')}/thanks?id=${order_uuid}`);
+                                }
+                            }
+
+                            else if (status?.code == 4) {
+                                let link = new Link;
+                                link.to(`${getSubdomainSerialized('checkout')}/analysis?id=${order_uuid}`);
+                            }
+
+                            else {
+                                Swal.fire('Erro!', 'O pagamento não pôde ser concluído.', 'error');
+                            }
+                        }
+
+                        else if (data.gateway == 'pagarme') {
+                            let charges = data?.charges || [];
+                            let first_charge = charges[0] || {};
+                            if (first_charge?.last_transaction?.status == "captured") {
+                                if (thanksEnabled == 1) {
+                                    let _url = thanksUrl;
+                                    let concat = /\?/.test(_url) ? '&' : '?';
+                                    document.location = _url + concat + 'k=' + token;
+                                }
+
+                                else {
+                                    let link = new Link;
+                                    link.to(`${getSubdomainSerialized('checkout')}/thanks?id=${order_uuid}`);
+                                }
+                            }
+                            
+                            else if (first_charge?.last_transaction?.status == "not_authorized") {
+                                let extra_msg = first_charge?.last_transaction?.acquirer_message;
+                                if (extra_msg && extra_msg.substr(-1) != ".") extra_msg = extra_msg + '.';
+
+                                if (extra_msg == "Transação aprovada com sucesso") extra_msg = '';
+                                
+                                Swal.fire('Erro!', 'Transação não autorizada. ' + extra_msg, 'error');
+                            }
+
+                            else {
+                                // console.log(__('hello')); // test translate
+                                let errs = [];
+                                let obj = data?.errors || {};
+                                for (let i in obj) {
+                                    obj[i]?.forEach(item => {
+                                        if (item && item.trim().substr(-1) != ".") item = item + '.';
+                                        return errs.push(__(item));
+                                    });
+                                }
+                                let strerrs = errs.join(". ");
+                                // console.log('errs');
+                                // console.log(errs);
+                                Swal.fire('Erro!', 'O pagamento não pôde ser concluído. ' + strerrs, 'error');
+                            }
+                        }
+                    }
+                    
+                    else if (payment_method == 'pix') {
+                        // let code = body?.data?.attributes?.pix?.qrcode;
+                        
+                        let link = new Link;
+                        link.to(`${getSubdomainSerialized('checkout')}/pix?id=${order_uuid}`);
+                    }
+
+                    else if (payment_method == 'billet') {
+                        // let code = body?.data?.attributes?.boleto?.digitable_line;
+                        // let pdf = body?.data?.attributes?.boleto?.link;
+                        
+                        let link = new Link;
+                        link.to(`${getSubdomainSerialized('checkout')}/billet?id=${order_uuid}`);
+                    }
+                        
+                    else if (payment_method == 'free') {
+                        let link = new Link;
+                        link.to(`${getSubdomainSerialized('checkout')}/thanks?id=${order_uuid}`);
+                    }
+
+                    else {
+                        Swal.fire('Erro!', 'O pagamento não pôde ser concluído.', 'error');
+                    }
+                    
+                    
+                    // let link = new Link;
+                    // link.to(`${getSubdomainSerialized('checkout')}/billet?id=123456123456123456`);
+                })
+
+                // se em algum momento do then() ocorrer um erro javascript cai nesse callback
+                .catch(error => {
+                    swal.close();
+                    Swal.fire('Erro!', 'O pagamento não pôde ser concluído.', 'error');
+                    console.log(error);
+                })
+                .finally(fin => {
+                    // console.log('end');
+                    // console.log(fin);
+                    element.removeAttribute('disabled');
+                    stopSpin(element);
+                    clearInterval(this.abandonedCartInterval);
+                })
+            ;
+            
+        }
+
+        catch (ex) {
+            if (ex instanceof EmptyNameException)
+                error_message = 'O nome está vazio.';
+
+            if (ex instanceof EmptyEmailException)
+                error_message = 'O e-mail está vazio.';
+
+            if (ex instanceof InvalidEmailException)
+                error_message = 'E-mail inválido.';
+
+            if (ex instanceof EmptyPhoneException)
+                error_message = 'O telefone está em branco.';
+
+            if (ex instanceof EmptyDocException)
+                error_message = 'O CPF/CNPJ está vazio.';
+                
+            if (ex instanceof InvalidDocException)
+                error_message = 'O CPF/CNPJ não é válido.';
+
+            if (ex instanceof EmptyPaymentMethodException)
+                error_message = 'Selecione o método de pagamento.';
+
+            if (ex instanceof EmptyStreetException)
+                error_message = 'A rua está em branco.';
+
+            if (ex instanceof EmptyNumberException)
+                error_message = 'O número da residência está em branco.';
+
+            if (ex instanceof EmptyNeighborhoodException)
+                error_message = 'O bairro está em branco.';
+
+            // if (ex instanceof EmptyComplementException)
+            //     error_message = 'O complemento está em branco.';
+
+            if (ex instanceof EmptyCityException)
+                error_message = 'A cidade está em branco.';
+
+            if (ex instanceof EmptyStateException)
+                error_message = 'O Estado está em branco.';
+
+            if (ex instanceof EmptyZipcodeException)
+                error_message = 'O CEP está em branco.';
+
+            if (ex instanceof EmptyHoldernameException)
+                error_message = 'O titular do cartão está em branco.';
+
+            if (ex instanceof EmptyCardNumberException)
+                error_message = 'O número do cartão está em branco.';
+
+            if (ex instanceof InvalidCardNumberException)
+                error_message = 'O cartão é inválido.';
+
+            if (ex instanceof EmptyMonthException)
+                error_message = 'O mês de expiração do cartão está em branco.';
+
+            if (ex instanceof EmptyYearException)
+                error_message = 'O ano de expiração do cartão está em branco.';
+
+            if (ex instanceof EmptyCvvException)
+                error_message = 'O CVV (código de segurança do cartão) está em branco.';
+                
+            Swal.fire('Erro!', error_message, 'error');
+        }
+    }
+
+    pmCreditCardOnClick(element, instance, methodName, ev) {
+        let display_total = document.querySelector('.display_total');
+        this.choiceTotal('total');
+
+        // let pixDiscount = Number(document.getAttribute('data-pix_discount_amount'));
+        // let billetDiscount = Number(document.getAttribute('data-billet_discount_amount'));
+        // let creditCardDiscount = Number(document.getAttribute('data-credit_card_discount_amount'));
+
+        let discount = Number(element.getAttribute('data-credit_card_discount_amount'));
+        let total = Number(display_total.getAttribute('data-current-total'));
+        let cond = discount < total;
+        if (cond) total = total + this.pmDiscountApplied;
+        let calc = discount < total ? total - discount : total;
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+        if (cond) this.pmDiscountApplied = discount;
+
+        let selectInstallments = document.querySelector('[checkout-input="installments"]');
+        let qty = selectInstallments.value;
+
+        if (qty > 1) {
+            this.choiceTotal('installments');
+        }
+
+        // if (this.addressAlwaysVisible)
+        //     document.querySelector('[checkout-section="address"]').classList.remove('d-none');
+    }
+
+    pmPixOnClick(element, instance, methodName, ev) {
+        this.resetInstallments();
+        let display_total = document.querySelector('.display_total');
+        this.choiceTotal('total');
+
+        let discount = Number(element.getAttribute('data-pix_discount_amount'));
+        let total = Number(display_total.getAttribute('data-current-total'));
+        let cond = discount < total;
+        if (cond) total = total + this.pmDiscountApplied;
+        let calc = discount < total ? total - discount : total;
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+        if (cond) this.pmDiscountApplied = discount;
+
+        // if (this.addressAlwaysVisible)
+        //     document.querySelector('[checkout-section="address"]').classList.remove('d-none');
+    }
+
+    pmBilletOnClick(element, instance, methodName, ev) {
+        this.resetInstallments();
+        let display_total = document.querySelector('.display_total');
+        this.choiceTotal('total');
+
+        let discount = Number(element.getAttribute('data-billet_discount_amount'));
+        let total = Number(display_total.getAttribute('data-current-total'));
+        let cond = discount < total;
+        if (cond) total = total + this.pmDiscountApplied;
+        let calc = cond ? total - discount : total;        
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+        if (cond) this.pmDiscountApplied = discount;
+
+        // if (this.addressAlwaysVisible)
+        //     document.querySelector('[checkout-section="address"]').classList.remove('d-none');
+    }
+    
+    resetInstallments() {
+        // element, instance, methodName, ev
+        let element = document.querySelector('[checkout-input="installments"]');
+        let qty = 1;
+        let display_total = document.querySelector('.display_total');
+        let display_total_installments = document.querySelector('.display_total_installments');
+        let total = Number(display_total.getAttribute('data-current-total'));
+        // display_total.setAttribute('data-total-before-installments', total);
+
+        // retira o valor da parcela aplicada do total, caso tenha sido aplicada
+        let old_fee ; if (old_fee = this.installments?.fee) total -= old_fee;
+
+        let fee = total * insx(qty);
+        this.installments = { qty, fee };
+
+        let new_total = total + fee;
+        let eachIns = new_total / qty;
+        
+        let calc = new_total;
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+    }
+
+    orderbumpCheckboxOnClick(element, instance, methodName, ev) {
+        let orderbump_id = element.getAttribute('data-orderbump-id');
+        let product_id = element.getAttribute('data-product-id');
+        let product_price = Number(element.getAttribute('data-product-price'));
+        let check = element.querySelector('[check]');
+        let checked = check.hasAttribute('checked');
+        let summaryProduct = document.querySelector(`[data-summary-product-id="${product_id}"]`);
+        let display_total = document.querySelector('.display_total');
+        this.choiceTotal('total');
+        let total = Number(display_total.getAttribute('data-current-total'));
+        let calc = total;
+
+        if (checked) {
+            check.removeAttribute('checked');
+            summaryProduct.removeAttribute('active');
+            this.orderbumps = this.orderbumps.filter(id => id != orderbump_id);
+            calc = total ? total - product_price : total;
+        }
+        else {
+            check.setAttribute('checked', true);
+            summaryProduct.setAttribute('active', true);
+            this.orderbumps.push(orderbump_id);
+            calc = total ? total + product_price : total;
+        }
+
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+    }
+
+    inputCpfCnpjMask() {
+        let element = $('[checkout-input="cpf_cnpj"]');
+        let options = {
+            placeholder: "___.___.___-__",
+            onKeyPress: function(value, e, field, options_) {
+                let masks = ["000.000.000-0099999", "00.000.000/0000-00"],
+                digits = value.replace(/\D/g, "").length,
+                mask = digits <= 11 ? masks[0] : masks[1];
+
+                element.mask(mask, options_);
+            }
+        };
+
+        if ($(document.body)?.mask) element.mask("000.000.000-0099999", options);
+    }
+
+    inputPhoneMask() {
+        let element = $(`[checkout-input="phone"]`);
+        var options = {
+            placeholder: "(__) ____-____",
+            onKeyPress: function(cep, e, field, options_) {
+                let masks = ["(00) 0000-00009", "(00) 0 0000-0000"],
+                digits = cep.replace(/[^0-9]/g, "").length,
+                mask = digits <= 10 ? masks[0] : masks[1];
+        
+                element.mask(mask, options_);
+            }
+        };
+        
+        if ($(document.body)?.mask) element.mask("(00) 0000-00009", options);
+    }
+
+    inputCepMask() {
+        if ($(document.body)?.mask) $('[checkout-input="zipcode"]').mask('00000-000');
+    }
+
+    fnAbandonedCart(self, input) {
+        if (!input.name.value || !input.email.value) return;
+
+        console.log('Abandoned');
+
+        let url_ = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/abandonedCart`;
+        let checkout_id = tagJSON('checkout').id;
+
+        let data = {
+            name: input.name.value,
+            email: input.email.value,
+            phone: input.phone.value,
+            doc: input.doc.value,
+            checkout_id,
+            url: document.location.href
+        };
+
+        let options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Client-Name': 'Action',
+                'Subdomain': subdomain()
+            },
+            body: JSON.stringify(data)
+        };
+
+        fetch(url_, options);
+    }
+
+    inputAbandonedCart() {
+        let self = this;
+        // a partir do momento que tiver nome, email preenchido, cadastrar em carrinho abandonado
+        // mas ainda nao marcar como abandonado.
+        // um cronjob vai ficar verificando se teve uma atualização no cadastro com este email
+        // se passou 3 minutos sem atualizacao, marcar como abandonado
+
+        let inputName = document.querySelector('[checkout-input="name"]');
+        let inputEmail = document.querySelector('[checkout-input="email"]');
+        let inputPhone = document.querySelector('[checkout-input="phone"]');
+        let inputDoc = document.querySelector('[checkout-input="cpf_cnpj"]');
+
+        if (!inputEmail) return;
+
+        let input = { name: inputName, email: inputEmail, phone: inputPhone, doc: inputDoc };
+
+        inputName.addEventListener('change', function() {
+            self.fnAbandonedCart(self, input);
+        });
+        
+        inputEmail.addEventListener('change', function() {
+            self.fnAbandonedCart(self, input);
+        });
+        
+        inputPhone.addEventListener('change', function() {
+            self.fnAbandonedCart(self, input);
+        });
+        
+        inputDoc.addEventListener('change', function() {
+            self.fnAbandonedCart(self, input);
+        });
+
+        this.abandonedCartInterval = setInterval(() => {
+            let url_ = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/abandonedCart/alive`;
+
+            let data = { email: input.email.value };
+
+            let options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Client-Name': 'Action',
+                    'Subdomain': subdomain()
+                },
+                body: JSON.stringify(data)
+            };
+    
+            fetch(url_, options);
+        }, 60 * 1000);
+    }
+
+    ready(element, instance, methodName, ev) {
+        // console.log('On Ready');
+        favicon.href = element.getAttribute('data-favicon');
+        let div_street = document.querySelector('.div_street');
+        let div_street_n = document.querySelector('.div_street_n');
+        let div_neighborhood = document.querySelector('.div_neighborhood');
+        let div_a_complement = document.querySelector('.div_a_complement');
+        let div_a_city = document.querySelector('.div_a_city');
+        let div_a_state = document.querySelector('.div_a_state');
+
+        /**
+         * Zipcode input in keyup event
+         */
+        $('body').on('keyup', '[checkout-input="zipcode"]', function(ev) {
+            let value = this.value;
+            if (this.value.length == 9) {
+                $.get(`https://viacep.com.br/ws/${value}/json`).done(response => {
+                    if (!(response?.uf)) return;
+                    $('[checkout-input="street"]').val(response.logradouro);
+                    $('[checkout-input="neighborhood"]').val(response.bairro);
+                    $('[checkout-input="city"]').val(response.localidade);
+                    $('[checkout-input="state"]').val(response.uf);
+                    if (/[0-9]/.test(ev.key)) $('[checkout-input="number"]').focus();
+                
+                    div_street.style.display = 'block';
+                    div_street_n.style.display = 'block';
+                    div_neighborhood.style.display = 'block';
+                    div_a_complement.style.display = 'block';
+                    div_a_city.style.display = 'block';
+                    div_a_state.style.display = 'block';
+                });
+            }
+        });
+
+        div_street.style.display = 'none';
+        div_street_n.style.display = 'none';
+        div_neighborhood.style.display = 'none';
+        div_a_complement.style.display = 'none';
+        div_a_city.style.display = 'none';
+        div_a_state.style.display = 'none';
+
+        setTimeout(() => $('.custom-social-proof').stop().slideToggle('slow'), 8000);
+        
+        /**
+         * pixel do facebook
+         */
+        let checkoutMeta = tagJSON('checkout_meta');
+        let pixel = checkoutMeta?.pixels?.find(pixel => pixel.platform == 'facebook')?.content || '';
+        if (pixel > 0 && !isNaN(pixel)) {
+            // console.log('initiate ' + pixel);
+            fbq('track', 'InitiateCheckout');
+        }
+
+
+        let search = queryString('f');
+
+        if (search) {
+            let abandonedCartInfo = JSON.parse(atob(search));
+            console.log(abandonedCartInfo);
+            
+            let inputName = document.querySelector('[checkout-input="name"]');
+            let inputEmail = document.querySelector('[checkout-input="email"]');
+            let inputPhone = document.querySelector('[checkout-input="phone"]');
+            let inputDoc = document.querySelector('[checkout-input="cpf_cnpj"]');
+
+            inputName.value = abandonedCartInfo?.name || '';
+            inputEmail.value = abandonedCartInfo?.email || '';
+            inputPhone.value = abandonedCartInfo?.phone || '';
+            inputDoc.value = abandonedCartInfo?.doc || '';
+        }
+         
+        // <?php 
+        /* let checkoutMeta = tagJSON('checkout_meta');
+        let pixel = checkoutMeta.pixels.find(pixel => pixel.platform == 'facebook')?.content || '';
+        if (pixel > 0 && !isNaN(pixel)) {
+            let fbq = pixelFacebook();
+            fbq('init', pixel);
+            // fbq('track', 'ViewContent');
+            fbq('track', 'InitiateCheckout');
+        }
+        
+        fbq('track', 'InitiateCheckout',
+            {
+                content_ids: ['partner_event_id'],
+                eventref: 'fb_oea' // or set to empty string
+            }
+        );
+
+        fbq('track', 'Purchase', {value: 12, currency: 'USD'}, {eventID: 'EVENT_ID'});
+        fbq('track', 'Purchase',
+            {
+                content_ids: ['partner_event_id'],
+                eventref: 'fb_oea' // or set to empty string
+                currency: 'BRL'  // your currency string value goes here
+                num_items: 1, // your number of tickets purchased value goes here
+                value: 15.30, // your total transaction value goes here
+            }
+        ); */ 
+        // ?>
+
+    }
+
+    /**
+     * Sempre que a pagina carregar via acesso direto na URL
+     */
+    end() {
+        let self = this;
+        this.load();
+        // console.log('On End');
+        
+        global.onloadRoutines.push({
+            name: "checkoutMasks", callback: function() {
+                self.inputCpfCnpjMask();
+                self.inputPhoneMask();
+                self.inputCepMask();
+            }
+        });
+
+        global.onloadRoutines.push({
+            name: "abandonedCart", callback: function() {
+                self.inputAbandonedCart();
+            }
+        });
+        
+
+        // console.log('loadeddd');
+        // let element = document.querySelector('[toggle-change]');
+        // if (element) {
+        //     element.removeEventListener('change', toggleChangeHandler);
+        //     element.addEventListener('change', toggleChangeHandler);
+        //     element.dispatchEvent(new Event('change'));
+        // }
+
+        
+        // global.onloadRoutines.push({
+        //     name: "pinInputHandler", callback: this.pinInputHandler
+        // });
+    }
+
+    /**
+     * Sempre que a pagina carregar via redirecionamento single page
+     * E no carregamento normal (esta sendo chamado dentro do metodo "end")
+     */
+    load() {
+        // pula stack principal
+        setTimeout(() => {
+            this.pinInputHandler();
+            this.choiceTheme();         
+        }, 0);
+    }
+
+    selectCreditCard() {
+        let self = this;
+        let options = document.querySelectorAll('.cc_pay_item_click');
+        [].map.call(options, option => {
+            option.addEventListener('click', function() {
+                let index = this.getAttribute('data-index');
+                // console.log("click: " + index);
+                let card = JSON.parse(this.getAttribute('data-card'));
+                let four_digits = this.getAttribute('data-four-digits');
+                let six_digits = this.getAttribute('data-six-digits');
+                if (six_digits) {
+                    six_digits = six_digits.substr(0, 4) + ' ' + six_digits.substr(4, 2);
+                    let span = document.querySelector('#a_selected_card span');
+                    span.innerHTML = `<b>${six_digits}** **** </b>${four_digits}`;
+                }
+                self.customerCreditCard = card;
+            });
+        });
+    }
+
+    choiceTheme() {
+        global.onloadRoutines.push({
+            name: "theme", callback: function() {
+                /* <?php // TODO: carregar esses if em json no frontend em todas as telas ?>  */
+                /* <?php if (!empty($checkout)): ?> */
+                    /* <?php if ($checkout?->dark_mode ?? false): ?> */
+                    document.body.classList.add('dark-mode');
+                    /* <?php endif; ?> */
+
+                    let columns = document.querySelector('.checkout_columns');
+                    if (!columns) return;
+
+                    let col1 = columns.querySelector('.checkout_col_1');
+                    let summary_sidebar = columns.querySelector('.checkout_col_summary_sidebar');
+                    let image_sidebar = columns.querySelector('.checkout_col_image_sidebar');
+                    let step_payment_as_column = columns.querySelector('.checkout_col_payment');
+
+                    let payment_form_as_column = columns.querySelector('.payment_form_as_column');
+                    let payment_form_as_section = columns.querySelector('.payment_form_as_section');
+                    let checkout_step_payment = columns.querySelector('.checkout_step_payment');
+                    let summary_as_section = columns.querySelector('.summary_as_section');
+                    let summary_block_1 = columns.querySelector('.summary_block_1');
+                    let summary_block_1_as_section = columns.querySelector('.summary_block_1_as_section');
+                    let checkout_col_summary_sidebar_card = columns.querySelector('.checkout_col_summary_sidebar_card');
+
+                    let btn_next_step_checkout = columns.querySelector('.btn_next_step_checkout');
+                    let div_stepper_control = columns.querySelector('.div_stepper_control');
+                    let block_options_payment_method = columns.querySelector('.block_options_payment_method');
+
+                    /* <?php if ($checkout?->theme?->image_sidebar_enabled ?? false): ?> */
+                    if (image_sidebar) {
+                        image_sidebar.style.display = 'block';
+                        image_sidebar.classList.add('col-lg-4');
+                    }
+                    /* <?php endif; ?> */
+
+                    /* <?php if ($checkout?->theme?->summary_sidebar_enabled ?? false): ?> */
+                    if (summary_sidebar) {
+                        summary_sidebar.style.display = 'block';
+                        summary_sidebar.classList.add('col-lg-4');
+                    }
+                    /* <?php endif; ?> */
+                    
+                    /* <?php if ($checkout?->theme?->step_payment_as_column ?? false): ?> */
+                        col1.classList.remove('col-lg-8');
+                        col1.classList.add('col-lg-4');
+                        
+                        summary_sidebar.style.display = 'block';
+                        summary_sidebar.classList.add('col-lg-4');
+
+                        step_payment_as_column.classList.add('col-lg-4');
+                        step_payment_as_column.style.display = 'block';
+
+                        payment_form_as_column.appendChild(checkout_step_payment);
+                        checkout_step_payment.style.display = 'block';
+                        
+                        btn_next_step_checkout.style.display = 'none';
+                        [].map.call(block_options_payment_method.children, element => {
+                            element.classList.remove('col-md-6');
+                            element.classList.remove('col-md-3');
+                        });
+                    /* <?php endif; ?> */
+
+                    /* <?php if ($checkout?->theme?->summary_form_enabled ?? false): ?> */
+                        checkout_step_payment.removeAttribute('step');
+                        // payment_form_as_section.appendChild(checkout_step_payment);
+                        // checkout_step_payment.style.display = 'block';
+                        div_stepper_control.style.display = 'none';                        
+                        summary_as_section.appendChild(summary_sidebar);
+                        summary_sidebar.style.display = 'block';
+                        summary_block_1_as_section.appendChild(summary_block_1);
+                        checkout_col_summary_sidebar_card.classList.remove('card-bordered');
+                    /* <?php endif; ?> */
+                /* <?php endif; ?> */
+
+                /* <?php if (!empty($product)): ?> */
+                    /* <?php if ($product->type == \Backend\Enums\Product\EProductType::PHYSICAL->value): ?> */
+                        this.addressAlwaysVisible = true;
+                        document.querySelector('[checkout-section="address"]').classList.remove('d-none');
+                        /* <?php else: ?> */
+                        this.addressAlwaysVisible = false;
+                    /* <?php endif; ?> */
+                /* <?php endif; ?> */
+            }
+        });
+    }
+
+    pinInputHandler() {
+        // console.log('On Pin Input Handler');
+
+        let specialKeys = this.specialKeys;
+        let getPin = this.getPin;
+        let clearPin = this.clearPin;
+        let firstPin = this.firstPin;
+        
+        let btnVerifyEmail = () => document.getElementById('btnVerifyEmail');
+
+        [].map.call(document.querySelectorAll('.rocketpays_pin input'), inputPin => {
+            inputPin.addEventListener('keyup', function(ev) {
+                let prev = this.previousElementSibling;
+                let next = this.nextElementSibling;
+                if (!specialKeys.includes(ev.code) && Number(ev.code) != NaN) (next || btnVerifyEmail()).focus();
+                if (ev.code == "Backspace") {
+                    prev?.focus();
+                }
+                if (this.value && !specialKeys.includes(ev.code)) {
+                    this.value = this.value[0];
+                    ev.preventDefault();
+                    return false;
+                }
+            });
+            inputPin.addEventListener('keydown', function(ev) {
+                let prev = this.previousElementSibling;
+                // let next = this.nextElementSibling;
+                if (ev.code == "Backspace") {
+                    if (!this.value && prev) prev.value = '';
+                }
+                if (this.value && !specialKeys.includes(ev.code)) {
+                    if (ev.key.replace(/\D/g, '')) this.value = ev.key;
+                    // ev.preventDefault();
+                    // return false;
+                }
+            });
+            inputPin.addEventListener('paste', function(ev) {
+                ev.preventDefault();
+                let paste = (ev.clipboardData || window?.clipboardData)?.getData("text");
+                let index = 0;
+                // se todos os 5 campos estao preenchidos, zerar
+                if (getPin()?.length == 5) clearPin();
+                this.value = '';
+                paste.split('').forEach(char => {
+                    let input = document.querySelectorAll('.rocketpays_pin input')[index];
+                    if (input) {
+                        input.value = char;
+                        input.focus();
+                    }
+                    index++;
+                });
+            });
+        });
+    }
+
+    btnVerifyEmailOnClick(element) {
+        let inputEmail = document.querySelector('[checkout-input="email"]')
+        let inputName = document.querySelector('[checkout-input="name"]');
+        let inputPhone = document.querySelector('[checkout-input="phone"]');
+        let inputDoc = document.querySelector('[checkout-input="cpf_cnpj"]');
+        let inputZipcode = document.querySelector('[checkout-input="zipcode"]');
+        let inputStreet = document.querySelector('[checkout-input="street"]');
+        let inputNumber = document.querySelector('[checkout-input="number"]');
+        let inputNeighborhood = document.querySelector('[checkout-input="neighborhood"]');
+        let inputComplement = document.querySelector('[checkout-input="complement"]');
+        let inputCity = document.querySelector('[checkout-input="city"]');
+        let inputState = document.querySelector('[checkout-input="state"]');
+        let inputGenderM = document.querySelector('#genderM');
+        let inputGenderF = document.querySelector('#genderF');
+        let divStreet = document.querySelector('.div_street');
+        let divNumber = document.querySelector('.div_street_n');
+        let divNeighborhood = document.querySelector('.div_neighborhood');
+        let divComplement = document.querySelector('.div_a_complement');
+        let divCity = document.querySelector('.div_a_city');
+        let divState = document.querySelector('.div_a_state');
+        let divZipcode = document.querySelector('.div_zipcode');
+        let divAddress = document.querySelector('.div_address');
+        let spanFullAddress = document.querySelector('.full_address');
+        this.addressFormat = spanFullAddress.innerHTML;
+
+        let pin = this.getPin();
+        let url = `${siteUrl()}/api/app/upsell/verify-email`;
+        let email = (inputEmail?.value || '').trim();
+
+        element.setAttribute('disabled', true);
+
+        let options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin, email })
+        };
+        
+        let response = fetch(url, options).then(response => response.json()).then(json => {
+            element.removeAttribute('disabled');
+
+            let token = json?.data?.token || '';
+            let message = json?.message || 'Internal error.';
+            this.customerAuthToken = token;
+
+            let { name, phone, doc, zipcode, street, number, neighborhood, complement, city, state, gender } = json?.data || {};
+
+            if (token) {
+                $('#modalPin').modal('hide');
+                inputName.value = name;
+                inputPhone.value = phone;
+                inputDoc.value = doc;
+                inputStreet.value = street;
+                inputNumber.value = number;
+                inputNeighborhood.value = neighborhood;
+                inputComplement.value = complement;
+                inputCity.value = city;
+                inputState.value = state;
+                inputPhone.focus();
+                gender == 'M' ? (inputGenderM.checked = true) : (inputGenderF.checked = true);
+                if (zipcode && typeof zipcode === 'string') {
+                    zipcode = zipcode.replace(/\D/g, '');
+                    inputZipcode.value = zipcode.substring(0, 5) + "-" + zipcode.substring(5, zipcode.length);
+                    spanFullAddress.innerHTML = spanFullAddress.innerHTML
+                        .replace('{street}', street)
+                        .replace('{number}', number)
+                        .replace('{neighborhood}', neighborhood)
+                        .replace('{complement}', complement)
+                        .replace('{city}', city)
+                        .replace('{state}', state)
+                        .replace('{zipcode}', zipcode)
+                    ;
+                    divAddress.classList.remove('d-none');
+                }
+                divStreet.style.display = 'none';
+                divNumber.style.display = 'none';
+                divNeighborhood.style.display = 'none';
+                divComplement.style.display = 'none';
+                divCity.style.display = 'none';
+                divState.style.display = 'none';
+                divZipcode.style.display = 'none';
+
+                this.fillCreditCard(token);
+            }
+
+            else Swal.fire({
+                title: 'Erro!',
+                text: message,
+                icon: 'error'
+            });
+        })
+        .catch(console.error);
+    }
+    // installmentsOnChange(element, instance, methodName, ev)
+
+    emailOnBlur(element) {
+        this.emailHandler(element);
+    }
+
+    // emailOnChange(element) {
+    //     console.log('Email Change');
+    //     this.emailHandler(element);
+    // }
+
+    emailHandler(element) {
+        let inputPhone = document.querySelector('[checkout-input="phone"]');
+        let pinDesc = document.querySelector('.pin_description');
+        let email = element?.value || '';
+
+        // se o campo foi clicado mas o e-mail continua o mesmo
+        if (this.lastEmail == email) {
+            return;
+        }
+        
+        this.customerAuthToken = ''; // desloga
+        this.clearPin();
+        this.typeCreditCardSection().classList.remove('d-none');
+        this.savedCreditCardSection().classList.add('d-none');
+
+        // let options = {
+        //     headers: {'Content-Type': 'application/json', 'Client-Name': 'Action'},
+        //     method: 'POST',
+        //     body: JSON.stringify(data)
+        // };
+
+        // console.log(data);
+
+        // let url = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/customer/auth/check`;
+        // let url = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/customer/auth/send-pin`;
+        // fetch(url, options).then(response => response.json()).then(body => {
+        //     console.log(body);
+        // });
+        
+        mCustomerEmail.innerHTML = email;
+
+        Swal.fire({
+            title: 'Aguarde...',
+            html: "Verificando e-mail de cliente.",
+            confirmButtonText: 'Fechar',
+            showCancelButton: false,
+            onBeforeOpen: Swal.showLoading
+        });
+        
+        let url = `${siteUrl()}/api/app/upsell/send-pin`;
+        let options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Client-Name': 'Action' },
+            body: JSON.stringify({ email: btoa(email) })
+        };
+
+        fetch(url, options).then(response => response.json()).then(({ status, code, message }) => {
+            swal.close();
+
+            if (status == 'success')
+                $('#modalPin').modal('show');
+            
+            else if (status == 'error' && code == 2) {
+                inputPhone.focus();
+            }
+
+            else Swal.fire({
+                title: 'Erro!',
+                text: message,
+                icon: 'error'
+            });
+        });
+    }
+    
+    getPin() {
+        return [].map.call(document.querySelectorAll('.rocketpays_pin input'), input => input.value).join('');
+    }
+
+    clearPin() {
+        return [].map.call(document.querySelectorAll('.rocketpays_pin input'), input => input.value = '');
+    }
+
+    firstPin() {
+        return document.querySelector('.rocketpays_pin input');
+    }
+
+    typeCreditCardSection() {
+        return document.querySelector('[checkout-subsection="type_credit_card"]');
+    }
+
+    savedCreditCardSection() {
+        return document.querySelector('[checkout-subsection="saved_credit_card"]');
+    }
+
+    fillCreditCard(token) {
+        this.customerCreditCard = null;
+        let url = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/customer/credit-card/latest`;
+        let options = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Client-Name': 'Action', 'Data': token },
+        };
+
+        fetch(url, options).then(response => response.json()).then(({ status, code, message, data: {cards} }) => {
+            // console.log('foi');
+            // console.log(cards);
+            let card = cards[0];
+            card.index = 0;
+
+            let a_selected_card = document.getElementById('a_selected_card');
+            
+            let first_six_digits = '';
+            if (card) {
+                first_six_digits = card.first_six_digits;
+                first_six_digits = first_six_digits.substr(0, 4) + ' ' + first_six_digits.substr(4, 2);
+                a_selected_card.querySelector('span').innerHTML = `${first_six_digits}<b>** ****</b> ${card.last_four_digits}`;
+
+                this.customerCreditCard = card;
+                this.useSavedCard = true;
+            }
+            first_six_digits = '';
+
+            if (cards?.length) {
+                this.typeCreditCardSection().classList.add('d-none');
+                this.savedCreditCardSection().classList.remove('d-none');
+                
+                let ul = document.querySelector('.inv_sel_pm');
+
+                let n = 0;
+                cards.forEach(item => {
+                    item.index = n;
+                    let index = cards.length-1-n;
+                    // my_cards[index] = item.id;
+                    // cards[index] = item;
+                    let date = new Date(item.updated_at);
+                    let day = '', m = '', H = '', i = '', s = '';
+                    let 
+                    first_six_digits = item.first_six_digits;
+                    first_six_digits = first_six_digits.substr(0, 4) + ' ' + first_six_digits.substr(4, 2);
+                    // console.log(`${first_six_digits}** **** ${item.last_four_digits}`);
+                    let template = `
+                    <li>
+                        <a href="javascript:;" class="cc-pay-item cc_pay_item_click" data-index="${index}" data-card='${JSON.stringify(item)}'
+                            data-four-digits="${item.last_four_digits}" data-six-digits="${item.first_six_digits}">
+                            <em class="cc-pay-item-icon icon ni ni-cc-visa"></em>
+                            <span class="cc-pay-item-name">
+                                <span class="cc-pay-item-method"><span class="cc-pay-star">${first_six_digits}<b>** ****</b></span> ${item.last_four_digits}</span>
+                                <span class="cc-pay-item-meta">${item.brand} - 
+                                ${
+                                (day = date.getDate(), day = day < 10 ? "0" + day : day) + '/' + 
+                                (m = date.getMonth() + 1, m = m < 10 ? "0" + m : m) + '/' + 
+                                date.getFullYear() +
+                                ' às ' +
+                                (H = date.getHours(), H = H < 10 ? "0" + H : H) + ':' +
+                                (i = date.getMinutes(), i = i < 10 ? "0" + i : i) + ':' +
+                                (s = date.getSeconds(), s = s < 10 ? "0" + s : s)
+                                }
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                    `;
+                    let content = ul.innerHTML;
+                    ul.innerHTML = content + template;
+                    n++;
+                });
+                this.selectCreditCard();
+            }
+            else this.creditCardSection().classList.remove('d-none');
+        });
+    }
+
+    editAddressOnClick(element) {
+        let divStreet = document.querySelector('.div_street');
+        let divNumber = document.querySelector('.div_street_n');
+        let divNeighborhood = document.querySelector('.div_neighborhood');
+        let divComplement = document.querySelector('.div_a_complement');
+        let divCity = document.querySelector('.div_a_city');
+        let divState = document.querySelector('.div_a_state');
+        let divZipcode = document.querySelector('.div_zipcode');
+        let divAddress = document.querySelector('.div_address');
+        let spanFullAddress = document.querySelector('.full_address');
+        spanFullAddress.innerHTML = this.addressFormat;
+
+        divStreet.style.display = 'block';
+        divNumber.style.display = 'block';
+        divNeighborhood.style.display = 'block';
+        divComplement.style.display = 'block';
+        divCity.style.display = 'block';
+        divState.style.display = 'block';
+        divZipcode.style.display = 'block';
+        divAddress.classList.add('d-none');
+        
+        // let inputZipcode = document.querySelector('[checkout-input="zipcode"]');
+        // let inputStreet = document.querySelector('[checkout-input="street"]');
+        // let inputNumber = document.querySelector('[checkout-input="number"]');
+        // let inputNeighborhood = document.querySelector('[checkout-input="neighborhood"]');
+        // let inputComplement = document.querySelector('[checkout-input="complement"]');
+        // let inputCity = document.querySelector('[checkout-input="city"]');
+        // let inputState = document.querySelector('[checkout-input="state"]');
+
+        // let street = inputStreet.value;
+        // let number = inputNumber.value;
+        // let neighborhood = inputNeighborhood.value;
+        // let complement = inputComplement.value;
+        // let city = inputCity.value;
+        // let state = inputState.value;
+        // let zipcode = inputZipcode.value;
+        //     .replace('{street}', street)
+        //     .replace('{number}', number)
+        //     .replace('{neighborhood}', neighborhood)
+        //     .replace('{complement}', complement)
+        //     .replace('{city}', city)
+        //     .replace('{state}', state)
+        //     .replace('{zipcode}', zipcode)
+    }
+
+    holdernameOnBlur(element) {
+        this.holdernameHandler(element);
+    }
+
+    holdernameOnChange(element) {
+        this.holdernameHandler(element);
+    }
+
+    holdernameHandler(element) {
+        element.value = element.value.toLowerCase()
+            .replace(/\à/g, 'a')
+            .replace(/\á/g, 'a')
+            .replace(/\ã/g, 'a')
+            .replace(/\ä/g, 'a')
+            .replace(/\â/g, 'a')
+            .replace(/\è/g, 'e')
+            .replace(/\é/g, 'e')
+            .replace(/\ê/g, 'e')
+            .replace(/\ë/g, 'e')
+            .replace(/\í/g, 'i')
+            .replace(/\ì/g, 'i')
+            .replace(/\î/g, 'i')
+            .replace(/\ï/g, 'i')
+            .replace(/\ó/g, 'o')
+            .replace(/\ò/g, 'o')
+            .replace(/\ô/g, 'o')
+            .replace(/\õ/g, 'o')
+            .replace(/\ö/g, 'o')
+            .replace(/\ú/g, 'u')
+            .replace(/\ù/g, 'u')
+            .replace(/\û/g, 'u')
+            .replace(/\ü/g, 'u')
+            .replace(/\ç/g, 'c')
+            .replace(/[^a-zA-z\s]/g, '')
+            .toUpperCase();
+    }
+
+    validateOnNext() {
+        let data = {
+            name: document.querySelector('[checkout-input="name"]')?.value || '',
+            email: document.querySelector('[checkout-input="email"]')?.value || '',
+            cpf_cnpj: document.querySelector('[checkout-input="cpf_cnpj"]')?.value || '',
+            phone: document.querySelector('[checkout-input="phone"]')?.value || '',
+        };
+
+        let error_registration = document.querySelector('.error_registration');
+
+        data.cpf_cnpj = data?.cpf_cnpj?.replace(/\D/g, '');
+
+        let error_message = '', validated = false;
+
+        try {
+            if (!data?.name) throw new EmptyNameException;
+            if (!data?.email) throw new EmptyEmailException;
+            if (!data?.email?.isEmail()) throw new InvalidEmailException;
+            if (!data?.phone) throw new EmptyPhoneException;
+            if (!data?.cpf_cnpj) throw new EmptyDocException;
+            if (!String(data?.cpf_cnpj).isCPF() && !String(data?.cpf_cnpj).isCNPJ())
+                throw new InvalidDocException;
+                
+            error_registration.style.display = 'none';
+            error_registration.innerHTML = '';
+
+            validated = true;
+        }
+
+        catch (ex) {
+            if (ex instanceof EmptyNameException) {
+                error_message = 'O nome está vazio.';
+                validated = false;
+            }
+
+            if (ex instanceof EmptyEmailException) {
+                error_message = 'O e-mail está vazio.';
+                validated = false;
+            }
+
+            if (ex instanceof InvalidEmailException) {
+                error_message = 'E-mail inválido.';
+                validated = false;
+            }
+
+            if (ex instanceof EmptyPhoneException) {
+                error_message = 'O telefone está em branco.';
+                validated = false;
+            }
+
+            if (ex instanceof EmptyDocException) {
+                error_message = 'O CPF/CNPJ está vazio.';
+                validated = false;
+            }
+                
+            if (ex instanceof InvalidDocException) {
+                error_message = 'O CPF/CNPJ não é válido.';
+                validated = false;
+            }
+
+            if (!validated) {
+                error_registration.style.display = 'block';
+                error_registration.innerHTML = error_message;
+            }
+        }
+
+        finally 
+        {
+            return validated;
+        }
+    }
+
+    choiceTotal(type) {
+        let display_total = document.querySelector('.display_total');
+        let display_total_installments = document.querySelector('.display_total_installments');
+
+        if (type == 'total') {
+            display_total.style.display = 'block';
+            display_total_installments.style.display = 'none';
+        }
+
+        else if (type == 'installments') {
+            display_total.style.display = 'none';
+            display_total_installments.style.display = 'block';
+        }
+    }
+
+    installmentsOnChange(element, instance, methodName, ev) {
+        let qty = Number(element.value);
+        let display_total = document.querySelector('.display_total');
+        let display_total_installments = document.querySelector('.display_total_installments');
+        let total = Number(display_total.getAttribute('data-current-total'));
+        // display_total.setAttribute('data-total-before-installments', total);
+
+        // retira o valor da parcela aplicada do total, caso tenha sido aplicada
+        let old_fee ; if (old_fee = this.installments?.fee) total -= old_fee;
+
+        let fee = total * insx(qty);
+        this.installments = { qty, fee };
+
+        let new_total = total + fee;
+        let eachIns = new_total / qty;
+        
+        let calc = new_total;
+        display_total.innerHTML = currencySymbol(calc);
+        display_total.setAttribute('data-current-total', calc);
+
+        if (qty > 1) {
+            display_total_installments.innerHTML = `${qty}x de ${currencySymbol(eachIns)}`;
+            this.choiceTotal('installments');
+        }
+
+        else if (qty == 1) {
+            this.choiceTotal('total'); 
+        }
+    }
+
+    applyCoupon() {        
+        let coupon = document.querySelector('[checkout-input="coupon"]');
+        
+        let data = {
+            coupon: coupon?.value || '',
+        };
+
+        let options = {
+            headers: {'Content-Type': 'application/json', 'Client-Name': 'Action'},
+            method: 'POST',
+            body: JSON.stringify(data)
+        };
+
+        let id = params().id;
+
+        let url = `${getSubdomainSerialized('checkout')}/ajax/actions/subdomains/checkout/applyCoupon`;
+        fetch(url, options).then(response => response.json()).then(body => {
+            toast(body.message);  
+            if (body?.status == 'success') {
+                let display_total = document.querySelector('.display_total');
+                let total = Number(display_total.getAttribute('data-current-total'));
+                let discount = Number(body?.data?.discount || 0);
+                let type = body?.data?.type;
+
+                if (type == '<?php echo \Backend\Enums\Coupon\ECouponType::PERCENT->value; ?>') {
+                    total = total - (total * (discount / 100));
+                }
+
+                else if (type == '<?php echo \Backend\Enums\Coupon\ECouponType::PRICE->value; ?>') {
+                    total = total - discount;
+                }
+                
+                let calc = total;
+                display_total.innerHTML = currencySymbol(calc);
+                display_total.setAttribute('data-current-total', calc);
+            }
+        });
+    }
+
+    addCreditCardOnClick() {
+        this.useSavedCard = false;
+        this.typeCreditCardSection().classList.remove('d-none');
+        this.savedCreditCardSection().classList.add('d-none');
+    }
+
+    savedCreditCardOnClick() {
+        this.useSavedCard = true;
+        this.typeCreditCardSection().classList.add('d-none');
+        this.savedCreditCardSection().classList.remove('d-none');
+    }
+};

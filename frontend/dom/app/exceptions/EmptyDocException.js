@@ -1,0 +1,1 @@
+class EmptyDocException extends Error {}

@@ -1,0 +1,1 @@
+class EmptyDigitException extends Error {}

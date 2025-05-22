@@ -1,0 +1,1 @@
+class PasswordWrongException extends Error {}

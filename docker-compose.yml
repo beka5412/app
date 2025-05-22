@@ -1,0 +1,61 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: lyzard-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - .:/var/www/
+            - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./.docker/nginx:/var/log/nginx/
+            - ./.docker/pm2:/root/.pm2/logs
+        networks:
+            - lyzard-app-network
+        depends_on:
+            - db
+
+    # nginx:
+    #     image: nginx:alpine
+    #     restart: unless-stopped
+    #     ports:
+    #         - 80:80
+    #         - 443:443
+    #     volumes:
+    #         - ./:/var/www
+    #         - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled
+    #         - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    #         - ./docker/certbot/www:/var/www/certbot/
+    #         - ./docker/certbot/conf/:/etc/nginx/ssl/
+    #     networks:
+    #         - lyzard-app-network
+
+    db:
+        image: mysql:8
+        container_name: db_lyzard_app
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASS}
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USER}
+            MYSQL_PASSWORD: ${DB_PASS}
+        volumes:
+            - ./.docker/mysql/dbdata:/var/lib/mysql
+        networks:
+            - lyzard-app-network
+        ports:
+            - "3306:3306"
+
+    # certbot:
+    #     image: certbot/certbot
+    #     volumes:
+    #         - ./docker/certbot/www/:/var/www/certbot
+    #         - ./docker/certbot/conf/:/etc/letsencrypt
+
+networks:
+    lyzard-app-network:
+        driver: bridge

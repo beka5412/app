@@ -1,0 +1,1 @@
+class EmptyStreetException extends Error {}

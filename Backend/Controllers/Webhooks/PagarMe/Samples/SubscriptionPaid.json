@@ -1,0 +1,102 @@
+{
+    "id": "hook_03MGWjqCgH8xVXjg",
+    "account": {
+        "id": "acc_em79QL6IvAc7b8Dv",
+        "name": "ROCKET LEADS"
+    },
+    "type": "charge.paid",
+    "created_at": "2023-03-29T03:23:46.67Z",
+    "data": {
+        "id": "ch_lrxKlDJf8CLLKj0L",
+        "code": "9DROHJFQ7G-06",
+        "gateway_id": "1292741973",
+        "amount": 100,
+        "paid_amount": 100,
+        "status": "paid",
+        "currency": "BRL",
+        "payment_method": "credit_card",
+        "due_at": "2023-03-29T23:59:59",
+        "paid_at": "2023-03-29T03:23:46",
+        "created_at": "2023-03-29T03:23:45",
+        "updated_at": "2023-03-29T03:23:46",
+        "invoice": {
+            "id": "in_alVBGa9t5WiYGm6k",
+            "code": "5OZ4U0U47X",
+            "url": "/invoices/in_alVBGa9t5WiYGm6k",
+            "amount": 100,
+            "status": "paid",
+            "payment_method": "credit_card",
+            "due_at": "2023-03-29T23:59:59",
+            "created_at": "2023-03-29T03:23:45",
+            "subscriptionId": "sub_AzwRo8VTgpsnNqvP",
+            "metadata": {}
+        },
+        "customer": {
+            "id": "cus_wdvp3ydHkySbDbYj",
+            "name": "Gledson Poggioni",
+            "email": "dev@bluedrops.com.br",
+            "document": "08961608665",
+            "type": "individual",
+            "delinquent": false,
+            "created_at": "2023-03-11T04:16:29",
+            "updated_at": "2023-03-11T04:16:29",
+            "phones": {
+                "mobile_phone": {
+                    "country_code": "55",
+                    "number": "997924543",
+                    "area_code": "47"
+                }
+            }
+        },
+        "last_transaction": {
+            "id": "tran_4zENLzJHmotlZ3gn",
+            "transaction_type": "credit_card",
+            "gateway_id": "1292741973",
+            "amount": 100,
+            "status": "captured",
+            "success": true,
+            "installments": 1,
+            "acquirer_name": "pagarme",
+            "acquirer_tid": "1292741973",
+            "acquirer_nsu": "1292741973",
+            "acquirer_auth_code": "767336",
+            "acquirer_message": "Transação aprovada com sucesso",
+            "acquirer_return_code": "0000",
+            "operation_type": "auth_and_capture",
+            "card": {
+                "id": "card_lW4KLv0cMlsqbNGr",
+                "first_six_digits": "550209",
+                "last_four_digits": "3272",
+                "brand": "Mastercard",
+                "holder_name": "Gledson W P Silva",
+                "holder_document": "08961608665",
+                "exp_month": 2,
+                "exp_year": 2031,
+                "status": "active",
+                "type": "credit",
+                "created_at": "2023-03-12T03:00:46",
+                "updated_at": "2023-03-28T15:49:15",
+                "billing_address": {
+                    "street": "Rua/Av Rua Camboriú, No 891, Fazenda",
+                    "zip_code": "88301-451",
+                    "city": "Itajaí",
+                    "state": "SC",
+                    "country": "BR",
+                    "line_1": "Rua/Av Rua Camboriú, No 891, Fazenda"
+                }
+            },
+            "created_at": "2023-03-29T03:23:45",
+            "updated_at": "2023-03-29T03:23:45",
+            "gateway_response": {
+                "code": "200",
+                "errors": []
+            },
+            "antifraud_response": {},
+            "metadata": {}
+        },
+        "metadata": {
+            "id": "my_subscription_id"
+        },
+        "recurrence_cycle": "subsequent"
+    }
+}

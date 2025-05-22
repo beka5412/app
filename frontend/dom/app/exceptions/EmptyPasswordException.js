@@ -1,0 +1,1 @@
+class EmptyPasswordException extends Error {}

@@ -1,0 +1,38 @@
+header {
+    height: 64px;
+    background: var(--primary-color);
+}
+
+.header-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: #ffffffbf;
+    font-weight: 600;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgb(13 255 222);
+    margin-left: 20px;
+    font-family: 'Roboto';
+}
+
+.header-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: white;
+    padding-right: 30px;
+    font-weight: 400;
+}
+
+header .icon {
+    color: white;
+}
+
+.h-ic-menu { display: none }
+
+@media screen and (max-width: 750px)
+{
+    .h-ic-menu { display: flex }
+    .header-title { margin-left: 0 }
+}

@@ -1,0 +1,1 @@
+class EmptyStateException extends Error {}

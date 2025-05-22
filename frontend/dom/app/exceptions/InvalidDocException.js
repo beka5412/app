@@ -1,0 +1,1 @@
+class InvalidDocException extends Error {}

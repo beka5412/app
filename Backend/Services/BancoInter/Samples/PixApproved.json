@@ -1,0 +1,16 @@
+[
+    {
+        "codigoSolicitacao": "00000000-0000-0000-0000-b4cc14133b81",
+        "chave": "12345678909",
+        "dataHoraMovimento": "2023-07-26T19:24:14.873249",
+        "dataHoraSolicitacao": "2023-07-26T19:24:14.873249",
+        "endToEnd": "E0000000000000000000000000000000",
+        "recebedor": {
+            "cpfCnpj": "**456789*",
+            "nome": "YOUR NAME HERE"
+        },
+        "status": "EFETIVADO",
+        "tipoMovimentacao": "PAGAMENTO",
+        "valor": "1.0"
+    }
+]

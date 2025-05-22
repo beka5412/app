@@ -1,0 +1,1 @@
+class EmptyPaymentMethodException extends Error {}

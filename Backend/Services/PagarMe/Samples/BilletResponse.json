@@ -1,0 +1,108 @@
+{
+    "id": "or_JVb24RJcPWCg46dx",
+    "code": "LNOGUKVC8P",
+    "amount": 150,
+    "currency": "BRL",
+    "closed": false,
+    "items": [
+        {
+            "id": "oi_oBJYgZ4F7DHkgwD8",
+            "type": "product",
+            "description": "Chaveiro do Tesseract2",
+            "amount": 150,
+            "quantity": 1,
+            "status": "active",
+            "created_at": "2023-02-19T10:35:22Z",
+            "updated_at": "2023-02-19T10:35:22Z",
+            "code": "215"
+        }
+    ],
+    "customer": {
+        "id": "cus_6rVQz6askkiaQl82",
+        "name": "Seu madruga",
+        "email": "seumadruga@gmail.com",
+        "document": "17127592489",
+        "type": "individual",
+        "delinquent": false,
+        "created_at": "2023-02-19T04:48:06Z",
+        "updated_at": "2023-02-19T04:48:06Z",
+        "birthdate": "1953-01-17T00:00:00Z",
+        "phones": {
+            "home_phone": {
+                "country_code": "55",
+                "number": "680349071",
+                "area_code": "11"
+            },
+            "mobile_phone": {
+                "country_code": "55",
+                "number": "680349070",
+                "area_code": "11"
+            }
+        }
+    },
+    "status": "pending",
+    "created_at": "2023-02-19T10:35:22Z",
+    "updated_at": "2023-02-19T10:35:23Z",
+    "charges": [
+        {
+            "id": "ch_a0XjwODAcVI8YKW5",
+            "code": "LNOGUKVC8P",
+            "gateway_id": "1197504662",
+            "amount": 150,
+            "status": "pending",
+            "currency": "BRL",
+            "payment_method": "boleto",
+            "created_at": "2023-02-19T10:35:22Z",
+            "updated_at": "2023-02-19T10:35:23Z",
+            "customer": {
+                "id": "cus_6rVQz6askkiaQl82",
+                "name": "Seu madruga",
+                "email": "seumadruga@gmail.com",
+                "document": "17127592489",
+                "type": "individual",
+                "delinquent": false,
+                "created_at": "2023-02-19T04:48:06Z",
+                "updated_at": "2023-02-19T04:48:06Z",
+                "birthdate": "1953-01-17T00:00:00Z",
+                "phones": {
+                    "home_phone": {
+                        "country_code": "55",
+                        "number": "680349071",
+                        "area_code": "11"
+                    },
+                    "mobile_phone": {
+                        "country_code": "55",
+                        "number": "680349070",
+                        "area_code": "11"
+                    }
+                }
+            },
+            "last_transaction": {
+                "id": "tran_kpmKzJdFnuZmGwPD",
+                "transaction_type": "boleto",
+                "gateway_id": "1197504662",
+                "amount": 150,
+                "status": "generated",
+                "success": true,
+                "url": "https://api.pagar.me/1/boletos/live_cleb95zdjt21m01m50k3iuvcy",
+                "pdf": "https://api.pagar.me/1/boletos/live_cleb95zdjt21m01m50k3iuvcy?format=pdf",
+                "line": "23791.22928 60011.960279 07000.046909 1 92670000000150",
+                "barcode": "https://api.pagar.me/core/v5/transactions/tran_kpmKzJdFnuZmGwPD/barcode",
+                "qr_code": "https://api.pagar.me/core/v5/transactions/tran_kpmKzJdFnuZmGwPD/qrcode",
+                "nosso_numero": "1197504662",
+                "type": "DM",
+                "bank": "198",
+                "document_number": "1197504662",
+                "instructions": "Pagar",
+                "due_at": "2023-02-20T23:59:59Z",
+                "created_at": "2023-02-19T10:35:22Z",
+                "updated_at": "2023-02-19T10:35:22Z",
+                "gateway_response": {
+                    "code": "200"
+                },
+                "antifraud_response": {}
+            }
+        }
+    ],
+    "checkouts": []
+}

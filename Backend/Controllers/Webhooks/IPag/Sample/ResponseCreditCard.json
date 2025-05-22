@@ -1,0 +1,238 @@
+{
+    "id": 6941606,
+    "uuid": "3f09e0de78c7cf93e5731effd3bec734",
+    "resource": "transactions",
+    "attributes": {
+        "merchant": {
+            "uuid": "79795cd909ee51040c2dc69fdc4fa7cb",
+            "cpf_cnpj": "34.378.821\/0001-88",
+            "name": "Rocketleads"
+        },
+        "seller_id": "",
+        "order_id": "RP1693369804140",
+        "amount": 5,
+        "amount_fee": 1.15,
+        "installments": 1,
+        "tid": "CHAR_333FDE4D-3208-4B56-82D2-24C3CE13732E",
+        "authorization_id": "",
+        "nsu": "083066834173",
+        "status": {
+            "code": 8,
+            "message": "CAPTURED"
+        },
+        "method": "mastercard",
+        "captured_amount": 5,
+        "captured_at": "2023-08-30 01:30:12",
+        "acquirer": {
+            "name": "pagsegurov4",
+            "message": "APROVADA E COMPLETADA COM SUCESSO",
+            "code": "00",
+            "merchant_id": ""
+        },
+        "gateway": {
+            "code": "F0",
+            "message": "A transa\u00e7\u00e3o foi APROVADA automaticamente devido as regras de antifraude"
+        },
+        "boleto": null,
+        "pix": {
+            "link": "",
+            "qrcode": "",
+            "qrcode64": ""
+        },
+        "url_authentication": "",
+        "callback_url": "https:\/\/checkout.rocketpays.app\/wook\/ipag",
+        "card": {
+            "holder": "ROCKETLEADS LTDA",
+            "number": "549738******8229",
+            "expiry_month": "05",
+            "expiry_year": "2029",
+            "brand": "mastercard",
+            "token": "bbba0c33-6398-4580-b1f9-7ebedd63046a"
+        },
+        "authentication": null,
+        "customer": {
+            "name": "Gledson W P Silva",
+            "cpf_cnpj": "08961608665",
+            "email": "contato@rocketleads.com.br",
+            "phone": "(47) 9792-4543",
+            "birthdate": "0000-00-00",
+            "billing_address": {
+                "street": "RUA EVARISTO DA VEIGA",
+                "number": "21",
+                "district": "PRAIA DOS AMORES",
+                "complement": "APT 1",
+                "city": "BALNEARIO CAMBORIU",
+                "state": "SC",
+                "zip_code": "88331500"
+            },
+            "shipping_address": {
+                "street": "",
+                "number": "",
+                "district": "",
+                "complement": "",
+                "city": "",
+                "state": "",
+                "zip_code": ""
+            }
+        },
+        "subscription": {
+            "id": 105405,
+            "resource": "subscriptions",
+            "attributes": {
+                "is_active": true,
+                "status": "paid",
+                "description": "Assinatura",
+                "profile_id": "",
+                "amount": 5,
+                "installments": 1,
+                "frequency": 1,
+                "interval": "month",
+                "charging_day": "30",
+                "starting_date": "2023-08-30",
+                "closing_date": "0000-00-00",
+                "callback_url": "https:\/\/checkout.rocketpays.app\/wook\/ipag",
+                "created_at": "",
+                "updated_at": "",
+                "plan": null,
+                "creditcard": {
+                    "token": "bbba0c33-6398-4580-b1f9-7ebedd63046a",
+                    "resource": "card_token",
+                    "attributes": {
+                        "card": {
+                            "is_active": true,
+                            "holder": "ROCKETLEADS LTDA",
+                            "bin": "549738",
+                            "last4": "8229",
+                            "brand": "mastercard"
+                        },
+                        "holder": {
+                            "name": "",
+                            "cpf": "",
+                            "foreignerNumber": "",
+                            "email": "",
+                            "contacts": [],
+                            "addresses": []
+                        },
+                        "validated_at": "",
+                        "expires_at": "2029-05-31 23:59:59",
+                        "created_at": "2023-08-30 01:30:12",
+                        "updated_at": "2023-08-30 01:30:12"
+                    }
+                },
+                "customer": {
+                    "id": 156689,
+                    "uuid": "61d820598d7d371eed16af32f43fe94e",
+                    "resource": "customers",
+                    "attributes": {
+                        "is_active": true,
+                        "name": "Gledson W P Silva",
+                        "business_name": "Gledson W P Silva",
+                        "cpf_cnpj": "08961608665",
+                        "email": "contato@rocketleads.com.br",
+                        "phone": "4797924543",
+                        "address": {
+                            "street": "RUA EVARISTO DA VEIGA",
+                            "number": "21",
+                            "district": "PRAIA DOS AMORES",
+                            "complement": "APT 1",
+                            "city": "BALNEARIO CAMBORIU",
+                            "state": "SC",
+                            "zipcode": "88331500"
+                        },
+                        "created_at": "2023-08-30",
+                        "updated_at": "2023-08-30"
+                    }
+                },
+                "invoices": [
+                    {
+                        "subscription_id": 105405,
+                        "number": 1,
+                        "due_date": "2023-08-30",
+                        "amount": 5,
+                        "paid_amount": 5,
+                        "discount": 0,
+                        "payment_date": "2023-08-30",
+                        "description": "Assinatura",
+                        "payment": {
+                            "amount": 5,
+                            "paid_at": "2023-08-30",
+                            "transaction_id": 6941606
+                        },
+                        "tax_receipt": null
+                    }
+                ],
+                "links": {
+                    "payment": "https:\/\/api.ipag.com.br\/vpos?billing=d0849e2c877b35f3de33e5bdac7d6328"
+                }
+            }
+        },
+        "charge": null,
+        "products": [],
+        "antifraud": {
+            "score": 0.14,
+            "status": "approved",
+            "message": "Transa\u00e7\u00e3o aprovada pela Loja."
+        },
+        "split_rules": [],
+        "receivables": [
+            {
+                "id": 1898652,
+                "resource": "receivables",
+                "attributes": {
+                    "receiver_id": "120565",
+                    "receiver_uuid": "79795cd909ee51040c2dc69fdc4fa7cb",
+                    "transaction": "6941606",
+                    "transaction_order_id": "RP1693369804140",
+                    "status": "pending",
+                    "amount": 3.85,
+                    "gross_amount": 5,
+                    "hold_payment": false,
+                    "installment": 1,
+                    "description": "",
+                    "paid_at": "",
+                    "canceled_at": "",
+                    "expected_on": "2023-09-13 00:00:00",
+                    "created_at": "2023-08-30 01:30:12",
+                    "updated_at": "2023-08-30 01:30:12"
+                }
+            }
+        ],
+        "history": [
+            {
+                "amount": 5,
+                "type": "created",
+                "status": "succeeded",
+                "response_code": "",
+                "response_message": "",
+                "authorization_code": "",
+                "authorization_id": "",
+                "authorization_nsu": "",
+                "created_at": "2023-08-30 01:30:05"
+            },
+            {
+                "amount": 5,
+                "type": "authorized",
+                "status": "succeeded",
+                "response_code": "",
+                "response_message": "",
+                "authorization_code": "",
+                "authorization_id": "CHAR_333FDE4D-3208-4B56-82D2-24C3CE13732E",
+                "authorization_nsu": "",
+                "created_at": "2023-08-30 01:30:09"
+            },
+            {
+                "amount": 5,
+                "type": "captured",
+                "status": "succeeded",
+                "response_code": "00",
+                "response_message": "PR\u00c9 AUTORIZADA COM SUCESSO",
+                "authorization_code": "",
+                "authorization_id": "CHAR_333FDE4D-3208-4B56-82D2-24C3CE13732E",
+                "authorization_nsu": "083066834173",
+                "created_at": "2023-08-30 01:30:12"
+            }
+        ],
+        "created_at": "2023-08-30 01:30:05",
+        "updated_at": "2023-08-30 01:30:12"
+    }
+}

@@ -1,0 +1,46 @@
+// acao do botao comprar
+> MAKE_PAYMENT  
+
+    tbl_Orders: // tabela de pedidos
+        
+        if (payment_type == UNIQUE)
+            col_TransactionID: "pagarme.chargeID"           // vai utilizar o id da cobranca como id de transacao.
+        
+        if (payment_type == RECURRING)
+        {
+            col_TransactionID: "pagarme.subscriptionID"     // vai usar o id da assinatura como id de transacao, assim no proximo
+                                                            // pagamento, o id se mantem o mesmo. O id da cobranca eh referente ao 
+                                                            // pagamento atual, a cada mes pago, eh um id de cobranca.
+
+            // NOTA:
+            // a tabela Orders esta se comportando como uma representacao de uma tabela de assinatura ja que cada registro tem um id
+            // unico para cada assinatura.
+
+
+            addSubscription()                               // cria um registro de uma assinatura na tabela "Subscriptions"
+            {
+                addInvoice(due: '03/09/2023');              // cria primeira fatura com vencimento no proximo periodo na tabela "Invoices"
+            }
+        }
+
+
+// quando a compra for aprovada
+> WEBHOOK   
+    
+    paid?
+        
+        if (payment_type == UNIQUE)
+            getOrder(transaction_id: pagarme.chargeID)          // marca pedido como aprovado caso NAO SEJA uma assinatura
+                .approve()                                      // localizado pelo "id de cobranca"
+        
+        if (payment_type == RECURRING)                              // caso seja assinatura
+        {
+            getOrder(transaction_id: pagarme.subscriptionID)    // encontra pedido pelo id de assinatura
+                .approve()                                      // marca como "pago"
+                .updateExpiration('03/10/2023')                 // atualiza para nova data de expiracao
+                .approveInvoice()                               // marca a fatura como paga
+                .addInvoice(due: '03/10/2023')                  // cria uma nova fatura do proximo periodo
+        }
+
+
+    

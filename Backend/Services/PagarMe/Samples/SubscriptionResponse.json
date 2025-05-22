@@ -1,0 +1,79 @@
+{
+    "id": "sub_PApRVwju9sjL29gB",
+    "code": "Z3YUK4F0G2",
+    "start_at": "2023-07-18T00:00:00Z",
+    "interval": "month",
+    "interval_count": 1,
+    "billing_type": "prepaid",
+    "current_cycle": {
+      "id": "cycle_Ja29vyGuLIEnx7ko",
+      "start_at": "2023-07-18T00:00:00Z",
+      "end_at": "2023-08-17T23:59:59Z",
+      "billing_at": "2023-07-18T00:00:00Z",
+      "status": "billed",
+      "cycle": 1
+    },
+    "next_billing_at": "2023-08-18T00:00:00Z",
+    "payment_method": "credit_card",
+    "currency": "BRL",
+    "installments": 1,
+    "status": "failed",
+    "created_at": "2023-07-18T21:17:48Z",
+    "updated_at": "2023-07-18T21:17:48Z",
+    "customer": {
+      "id": "cus_n9qDWjbfMfyWb6m0",
+      "name": "Gledson Wagner Poggioni",
+      "email": "admin@example.com",
+      "document": "08961608665",
+      "type": "individual",
+      "delinquent": false,
+      "created_at": "2023-07-17T06:13:31Z",
+      "updated_at": "2023-07-17T06:13:31Z",
+      "phones": {
+        "mobile_phone": {
+          "country_code": "55",
+          "number": "97924543",
+          "area_code": "47"
+        }
+      }
+    },
+    "card": {
+      "id": "card_zrmo2w7cLIV2Mn7V",
+      "first_six_digits": "432957",
+      "last_four_digits": "3625",
+      "brand": "Visa",
+      "holder_name": "ROCKETLEADS DIGITAL",
+      "holder_document": "08961608665",
+      "exp_month": 1,
+      "exp_year": 2027,
+      "status": "active",
+      "type": "credit",
+      "created_at": "2023-07-18T18:05:51Z",
+      "updated_at": "2023-07-18T18:05:51Z",
+      "billing_address": {
+        "zip_code": "77826562",
+        "city": "Araguaína",
+        "state": "TO",
+        "country": "BR",
+        "line_1": "Rua/Av Rua 7, No 158, Setor Coimbra"
+      }
+    },
+    "items": [
+      {
+        "id": "si_4br0mRkiWKFp12W6",
+        "description": "Descrição",
+        "quantity": 1,
+        "status": "active",
+        "created_at": "2023-07-18T21:17:48Z",
+        "updated_at": "2023-07-18T21:17:48Z",
+        "pricing_scheme": {
+          "price": 500,
+          "scheme_type": "unit"
+        }
+      }
+    ],
+    "boleto": {},
+    "metadata": {
+      "id": "my_subscription_id"
+    }
+  }

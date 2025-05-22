@@ -1,0 +1,517 @@
+a {
+    cursor: pointer;
+}
+
+main {
+    width: calc(100% - 256px);
+}
+
+.wrapper {
+    height: 100%
+}
+
+.app {
+    width: 100%;
+}
+
+.app-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+/* .tr {
+    display: flex;
+    justify-content: space-between;
+} */
+
+.thead {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 750px)
+{
+    main { width: 100% }
+}
+
+content { display: block }
+
+.title {
+    font-size: 23px;
+    font-weight: 500;
+    font-family: 'Roboto';
+}
+
+.sub-title {
+    font-weight: 300;
+    font-size: 15px;
+    font-family: 'Roboto';
+}
+
+
+.dropzone,
+.ez-dropzone * {
+  box-sizing: border-box;
+}
+
+.ez-dropzone {
+  min-height: 150px;
+  border: 1px dashed #e5e9f2;
+  border-radius: 4px;
+  background: white;
+  padding: 20px 20px;
+}
+
+.dark-mode .ez-dropzone {
+  background-color: transparent;
+}
+
+.dropzone.small {
+  min-height: 86px;
+}
+
+.dropzone.dz-clickable {
+  cursor: pointer;
+}
+
+.dropzone.dz-clickable * {
+  cursor: default;
+}
+
+.dropzone.dz-clickable .dz-message,
+.dropzone.dz-clickable .dz-message * {
+  cursor: pointer;
+}
+
+.dropzone.dz-started .dz-message {
+  display: none;
+}
+
+.dropzone.dz-drag-hover {
+  border-style: solid;
+}
+
+.dropzone.dz-drag-hover .dz-message {
+  opacity: 0.5;
+}
+
+.ez-dropzone .dz-message {
+  text-align: center;
+  margin: 1em 0;
+}
+.ez-dropzone .dz-message span {
+  display: block;
+  color: rgba(82, 100, 132, 0.6);
+}
+.ez-dropzone .dz-message-text {
+  font-size: 13px;
+}
+.ez-dropzone .dz-message-text span {
+  display: inline-block;
+  color: #6576ff;
+}
+.ez-dropzone .dz-message-or {
+  font-size: 16px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.ez-dropzone .dz-preview {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin: 16px;
+  min-height: 100px;
+}
+
+.ez-dropzone .dz-preview:hover {
+  z-index: 1000;
+}
+
+.ez-dropzone .dz-preview:hover .dz-details {
+  opacity: 1;
+}
+
+.ez-dropzone .dz-preview.dz-file-preview .dz-image {
+  border-radius: 20px;
+  background: #999;
+  background: linear-gradient(to bottom, #eee, #ddd);
+}
+
+.ez-dropzone .dz-preview.dz-file-preview .dz-details {
+  opacity: 1;
+}
+
+.ez-dropzone .dz-preview.dz-image-preview {
+  background: white;
+}
+
+.ez-dropzone .dz-preview.dz-image-preview .dz-details {
+  -webkit-transition: opacity 0.2s linear;
+  -moz-transition: opacity 0.2s linear;
+  -ms-transition: opacity 0.2s linear;
+  -o-transition: opacity 0.2s linear;
+  transition: opacity 0.2s linear;
+}
+
+.ez-dropzone .dz-preview .dz-remove {
+  font-size: 14px;
+  text-align: center;
+  display: block;
+  cursor: pointer;
+  border: none;
+}
+
+.ez-dropzone .dz-preview .dz-remove:hover {
+  text-decoration: underline;
+}
+
+.ez-dropzone .dz-preview:hover .dz-details {
+  opacity: 1;
+}
+
+.ez-dropzone .dz-preview .dz-details {
+  z-index: 20;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  font-size: 13px;
+  min-width: 100%;
+  max-width: 100%;
+  padding: 2em 1em;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.9);
+  line-height: 150%;
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-size {
+  margin-bottom: 1em;
+  font-size: 16px;
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-filename {
+  white-space: nowrap;
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-filename:hover span {
+  border: 1px solid rgba(200, 200, 200, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-filename:not(:hover) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-filename:not(:hover) span {
+  border: 1px solid transparent;
+}
+
+.ez-dropzone .dz-preview .dz-details .dz-filename span,
+.ez-dropzone .dz-preview .dz-details .dz-size span {
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 0 0.4em;
+  border-radius: 3px;
+}
+
+.ez-dropzone .dz-preview:hover .dz-image img {
+  -webkit-transform: scale(1.05, 1.05);
+  -moz-transform: scale(1.05, 1.05);
+  -ms-transform: scale(1.05, 1.05);
+  -o-transform: scale(1.05, 1.05);
+  transform: scale(1.05, 1.05);
+  -webkit-filter: blur(8px);
+  filter: blur(8px);
+}
+
+.ez-dropzone .dz-preview .dz-image {
+  border-radius: 20px;
+  overflow: hidden;
+  width: 120px;
+  height: 120px;
+  position: relative;
+  display: block;
+  z-index: 10;
+}
+
+.ez-dropzone .dz-preview .dz-image img {
+  display: block;
+}
+
+.ez-dropzone .dz-preview.dz-success .dz-success-mark {
+  -webkit-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -moz-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -ms-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -o-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+  animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.ez-dropzone .dz-preview.dz-error .dz-error-mark {
+  opacity: 1;
+  -webkit-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -moz-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -ms-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+  -o-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+  animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.ez-dropzone .dz-preview .dz-success-mark,
+.ez-dropzone .dz-preview .dz-error-mark {
+  pointer-events: none;
+  opacity: 0;
+  z-index: 500;
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  margin-left: -27px;
+  margin-top: -27px;
+}
+
+.ez-dropzone .dz-preview .dz-success-mark svg,
+.ez-dropzone .dz-preview .dz-error-mark svg {
+  display: block;
+  width: 54px;
+  height: 54px;
+}
+
+.ez-dropzone .dz-preview.dz-processing .dz-progress {
+  opacity: 1;
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  -ms-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+
+.ez-dropzone .dz-preview.dz-complete .dz-progress {
+  opacity: 0;
+  -webkit-transition: opacity 0.4s ease-in;
+  -moz-transition: opacity 0.4s ease-in;
+  -ms-transition: opacity 0.4s ease-in;
+  -o-transition: opacity 0.4s ease-in;
+  transition: opacity 0.4s ease-in;
+}
+
+.ez-dropzone .dz-preview:not(.dz-processing) .dz-progress {
+  -webkit-animation: pulse 6s ease infinite;
+  -moz-animation: pulse 6s ease infinite;
+  -ms-animation: pulse 6s ease infinite;
+  -o-animation: pulse 6s ease infinite;
+  animation: pulse 6s ease infinite;
+}
+
+.ez-dropzone .dz-preview .dz-progress {
+  opacity: 1;
+  z-index: 1000;
+  pointer-events: none;
+  position: absolute;
+  height: 16px;
+  left: 50%;
+  top: 50%;
+  margin-top: -8px;
+  width: 80px;
+  margin-left: -40px;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-transform: scale(1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ez-dropzone .dz-preview .dz-progress .dz-upload {
+  background: #333;
+  background: linear-gradient(to bottom, #666, #444);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  -webkit-transition: width 300ms ease-in-out;
+  -moz-transition: width 300ms ease-in-out;
+  -ms-transition: width 300ms ease-in-out;
+  -o-transition: width 300ms ease-in-out;
+  transition: width 300ms ease-in-out;
+}
+
+.ez-dropzone .dz-preview.dz-error .dz-error-message {
+  display: block;
+}
+
+.ez-dropzone .dz-preview.dz-error:hover .dz-error-message {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ez-dropzone .dz-preview .dz-error-message {
+  pointer-events: none;
+  z-index: 1000;
+  position: absolute;
+  display: block;
+  display: none;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -ms-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
+  border-radius: 8px;
+  font-size: 13px;
+  top: 130px;
+  left: -10px;
+  width: 140px;
+  background: #be2626;
+  background: linear-gradient(to bottom, #be2626, #a92222);
+  padding: 0.5em 1.2em;
+  color: white;
+}
+
+.ez-dropzone .dz-preview .dz-error-message:after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 64px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #be2626;
+}
+
+.img_product_image img { width: 150px }
+
+.hide {
+  display: none
+}
+.btn-demote {
+  background: #df3939;
+  border-color: #b23232;
+}
+
+e {
+  display: none;
+}
+
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: 3px;
+  border: 3px solid #6576ff;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #6576ff transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.order-tracking::before {
+  background-color: #dddddd;
+}
+
+.is-complete {
+  background-color: #dddddd!important;
+}
+.order-tracking.completed .is-complete {
+  border-color: #27aa80!important;
+  border-width: 0px;
+  background-color: #27aa80!important;
+}
+
+.default-img {
+  width: 140px;
+  height: 140px;
+}
+
+.nk-wrap {
+  padding-left: 100px;
+}
+
+@media screen and (max-width: 750px) {
+  .nk-wrap {
+    padding-left: inherit;
+  }
+}
+
+.dashboard-sidebar {
+  background: var(--bg-background-2-dark);
+  border-color: var(--border-bg-dark);
+}
+
+
+.ez-sidebar {
+  padding-bottom: 200px;
+}
+
+.dark-mode .card, .dark-mode .kanban-add-task, .dark-mode .kanban-board-header, .dark-mode .kanban-item {
+  background: transparent;
+}
+
+.dark-mode .accordion, .dark-mode .form-clip, .dark-mode .form-text-hint, .dark-mode .card-aside, .dark-mode .code-block, .dark-mode .alert-pro, .dark-mode .toastr, .dark-mode .toggle-content, .dark-mode .nav-switch-s2 .nav-link:hover, .dark-mode .nav-switch-s2 .nav-link:focus, .dark-mode .nav-switch-s2 .nav-link.active, .dark-mode .select2-container--default .select2-selection--single, .dark-mode .select2-container--default .select2-selection--multiple, .dark-mode .select2-dropdown, .dark-mode .custom-file-label, .dark-mode .form-select, .dark-mode .popover, .dark-mode .search-wrap, .dark-mode div.dataTables_wrapper div.dataTables_filter input, div.dataTables_wrapper div.dataTables_filter .dark-mode input, .dark-mode .dual-listbox .dual-listbox__search, .dual-listbox .dark-mode .dual-listbox__search, .dark-mode .form-label-outlined, .dark-mode .input-mail, .dark-mode .page-link, .dark-mode .ui-timepicker-standard, .dark-mode .note-editor, .dark-mode .note-toolbar, .dark-mode .tox .tox-edit-area__iframe, .dark-mode .tox .tox-menubar, .dark-mode .tox-toolbar-overlord, .dark-mode .tox .tox-toolbar, .dark-mode .tox .tox-toolbar__primary, .dark-mode .tox .tox-toolbar__overflow, .dark-mode .tox .tox-statusbar, .dark-mode .tox .tox-menu, .dark-mode .datepicker table tr td.today, .dark-mode .datepicker table tr td.today:hover, .dark-mode .datepicker table tr td.today.disabled, .dark-mode .datepicker table tr td.today.disabled:hover, .dark-mode .datepicker table tr td.day:hover, .dark-mode .datepicker table tr td.day.focused, .dark-mode .datepicker .datepicker-switch:hover, .dark-mode .datepicker .prev:hover, .dark-mode .datepicker .next:hover, .dark-mode .datepicker tfoot tr th:hover
+{
+  background: transparent!important;
+}
+
+.dark-mode .btn-white, .dark-mode .dt-buttons .btn-secondary, .dt-buttons .dark-mode .btn-secondary, .dark-mode .btn-white.btn-dim, .dark-mode .btn-white.btn-outline-light {
+  background-color: #0d0d0e;
+}
+
+.notification-small-button {
+  text-align: center;
+  display: block;
+  padding: 2px 20px;
+  background: #0d0d0e;
+  border: 1px solid #2f2f2f;
+  color: #838282;
+  font-size: 12px;
+}
+
+.form-control {
+  background: transparent!important;
+}
+
+.form-control:disabled {
+  background: #212121!important;
+  border: transparent!important;
+} 
+
+.outbtn-small {
+  padding: 1px 15px;
+  border-radius: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.dark-mode select.form-control option
+{
+  background-color: #181818;
+}
+
+.swal2-container {
+  z-index: 99999;
+}

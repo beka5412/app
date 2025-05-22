@@ -1,0 +1,1 @@
+class PasswordNotMatchException extends Error {}

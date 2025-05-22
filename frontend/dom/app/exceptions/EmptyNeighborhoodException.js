@@ -1,0 +1,1 @@
+class EmptyNeighborhoodException extends Error {}

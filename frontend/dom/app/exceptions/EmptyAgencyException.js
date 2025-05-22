@@ -1,0 +1,1 @@
+class EmptyAgencyException extends Error {}

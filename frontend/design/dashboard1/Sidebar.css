@@ -1,0 +1,125 @@
+sidebar {
+    display: block;
+    width: 256px;
+    background: #ededed;
+    height: 100vh;
+    margin-left: 0;
+    transition: .13s ease-in-out;
+}
+
+.sidebar {
+    background: #10121d;
+    box-sizing: border-box;
+    height: 100vh;
+    padding: 1.5rem;
+}
+
+.sidebar-header {
+    box-shadow: 1px 2px 4px 0 rgb(0 0 0 / .1);
+    background: var(--secondary-color);
+    border-right: 1px solid var(--quartenary-color);
+    height: 64px;
+    font-family: 'Roboto';
+}
+
+.sidebar-body {
+    border-right: 1px solid rgba(0, 0, 0, .1);
+    min-height: 100%;
+}
+
+.s-h-i-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: calc(100% - 40px);
+}
+
+.s-h-info {
+    transition: .5s ease-in-out;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 1px 13px 1px 2px;
+}
+
+.s-h-info:hover {
+    background-color: var(--tertiary-color);
+}
+
+.s-p-icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.s-p-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.s-p-i-main {
+    color: #ffffffd1;
+    font-size: 14px;
+    height: 21px;
+    overflow: hidden;
+    word-break: break-all;
+}
+
+.s-p-i-sub {
+    color: #ffffff94;
+    font-size: 12px;
+}
+
+.sidebar-links {
+    padding-top: 10px;
+}
+
+.sidebar-links a {
+    font-family: 'Roboto';
+    font-size: 14px;
+    padding: 0 30px;
+    font-weight: 500;
+    display: block;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: .13s ease-in-out;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-left: 4px solid transparent;
+    color: #646464;
+    fill: #333;
+}
+
+
+.sidebar-links a:hover {
+    background: rgba(0, 0, 0, .039);
+}
+
+.sidebar-links a.active {
+    color: var(--primary-color);
+    fill: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+}
+
+.sidebar-links a > svg {
+    margin-right: 10px;
+}
+
+@media screen and (max-width: 750px)
+{
+    sidebar {
+        display: none;
+        
+    }
+
+    @media (max-width: 991.98px) {
+        .nk-sidebar-mobile {
+          display: none;
+          
+        }
+      }
+}

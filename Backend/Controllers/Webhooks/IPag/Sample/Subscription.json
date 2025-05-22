@@ -1,0 +1,115 @@
+{
+    "id": 6941274,
+    "uuid": "1993d45494331e2123702ba0dd8ea32e",
+    "resource": "transactions",
+    "attributes": {
+        "merchant": {
+            "uuid": "79795cd909ee51040c2dc69fdc4fa7cb",
+            "cpf_cnpj": "34.378.821/0001-88",
+            "name": "Rocketleads"
+        },
+        "seller_id": "",
+        "order_id": "6941274",
+        "amount": 99,
+        "amount_fee": 0,
+        "installments": 1,
+        "tid": "",
+        "authorization_id": "",
+        "nsu": "",
+        "status": {
+            "code": 7,
+            "message": "DECLINED"
+        },
+        "method": "visa",
+        "captured_amount": 0,
+        "captured_at": "0000-00-00 00:00:00",
+        "acquirer": {
+            "name": "pagsegurov4",
+            "message": "",
+            "code": "",
+            "merchant_id": ""
+        },
+        "gateway": {
+            "code": "P6",
+            "message": "O cartão informado expirou ou possui dados de vencimento incorretos"
+        },
+        "boleto": null,
+        "pix": {
+            "link": "",
+            "qrcode": "",
+            "qrcode64": ""
+        },
+        "url_authentication": "",
+        "callback_url": "https://99mystore.com.br/ipag/callback",
+        "card": {
+            "holder": "FULANO DA SILVA",
+            "number": "411111******1111",
+            "expiry_month": "03",
+            "expiry_year": "2021",
+            "brand": "visa",
+            "token": null
+        },
+        "authentication": null,
+        "customer": {
+            "name": "Fulano da Silva",
+            "cpf_cnpj": "79999338801",
+            "email": "",
+            "phone": "",
+            "birthdate": "0000-00-00",
+            "billing_address": {
+                "street": "RUA JULIO GONZALEZ",
+                "number": "1023",
+                "district": "BARRA FUNDA",
+                "complement": "SALA 02",
+                "city": "SAO PAULO",
+                "state": "SP",
+                "zip_code": "01156060"
+            },
+            "shipping_address": {
+                "street": "",
+                "number": "",
+                "district": "",
+                "complement": "",
+                "city": "",
+                "state": "",
+                "zip_code": ""
+            }
+        },
+        "subscription": null,
+        "charge": null,
+        "products": [],
+        "antifraud": {
+            "score": 0,
+            "status": "neutral",
+            "message": "Não analisado"
+        },
+        "split_rules": [],
+        "receivables": [],
+        "history": [
+            {
+                "amount": 99,
+                "type": "created",
+                "status": "succeeded",
+                "response_code": "",
+                "response_message": "",
+                "authorization_code": "",
+                "authorization_id": "",
+                "authorization_nsu": "",
+                "created_at": "2023-08-29 21:59:12"
+            },
+            {
+                "amount": 99,
+                "type": "denied",
+                "status": "succeeded",
+                "response_code": "",
+                "response_message": "",
+                "authorization_code": "",
+                "authorization_id": "",
+                "authorization_nsu": "",
+                "created_at": "2023-08-29 21:59:13"
+            }
+        ],
+        "created_at": "2023-08-29 21:59:12",
+        "updated_at": "2023-08-29 21:59:13"
+    }
+}

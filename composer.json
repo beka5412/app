@@ -1,0 +1,38 @@
+{
+    "name": "app/rocketpays",
+    "autoload": {
+        "psr-4": {
+            "Backend\\": "Backend/",
+            "Frontend\\": "frontend/",
+            "Routes\\": "routes/",
+            "Helpers\\": "helpers/"
+        },
+        "files": [
+            "bootstrap.php",
+            "helpers/helper.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Ezequiel",
+            "email": "quielbala@gmail.com"
+        }
+    ],
+    "require": {
+        "mrclay/minify": "~3.0.0",
+        "illuminate/database": "^9.46",
+        "illuminate/pagination": "^9.46",
+        "phpoption/phpoption": "^1.9",
+        "vlucas/phpdotenv": "^5.5",
+        "chillerlan/php-qrcode": "^4.3",
+        "ezeksoft/php-write-log": "^1.0",
+        "phpmailer/phpmailer": "^6.7",
+        "firebase/php-jwt": "^6.4",
+        "jeremykendall/php-domain-parser": "6.0",
+        "setono/meta-conversions-api-php-sdk": "^0.2.2",
+        "kriswallsmith/buzz": "^1.2",
+        "nyholm/psr7": "^1.6",
+        "ezeksoft/rocketzap": "^1.1",
+        "stripe/stripe-php": "^14.6"
+    }
+}

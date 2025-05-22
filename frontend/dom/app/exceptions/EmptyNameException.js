@@ -1,0 +1,1 @@
+class EmptyNameException extends Error {}

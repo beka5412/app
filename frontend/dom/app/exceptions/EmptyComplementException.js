@@ -1,0 +1,1 @@
+class EmptyComplementException extends Error {}

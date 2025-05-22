@@ -1,0 +1,1 @@
+class EmptyNumberException extends Error {}

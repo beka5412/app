@@ -1,0 +1,1 @@
+class EmptyZipcodeException extends Error {}
